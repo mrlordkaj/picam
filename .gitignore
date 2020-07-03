@@ -1,0 +1,13 @@
+# NetBeans IDE
+build
+dist
+nbproject/private
+nbproject/build-impl.xml
+nbproject/genfiles.properties
+
+# Eclipse IDE
+.metadata
+
+# Temporaries
+**.log
+**/Thumbs.db
