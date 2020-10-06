@@ -36,12 +36,12 @@ public abstract class Preference {
 
     private final File file;
 
-    public Preference(String name) {
+    protected Preference(String name) {
         String dir = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
         file = new File(dir + "/" + name);
     }
 
-    public void load() {
+    protected void load() {
         try (FileInputStream fis = new FileInputStream(file);
                 InputStreamReader isr = new InputStreamReader(fis);
                 BufferedReader br = new BufferedReader(isr)) {

@@ -32,6 +32,7 @@ public final class PicamConfig extends Preference {
     public static PicamConfig getInstance() {
         if (instance == null) {
             instance = new PicamConfig();
+            instance.load();
         }
         return instance;
     }

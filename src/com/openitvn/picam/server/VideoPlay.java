@@ -52,7 +52,6 @@ public final class VideoPlay extends JFrame implements
     
     static {
         PicamConfig.initSystem();
-        PicamConfig.getInstance().load();
     }
     
     final PicamVideo video = new PicamVideo();

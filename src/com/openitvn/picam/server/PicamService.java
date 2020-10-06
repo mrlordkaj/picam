@@ -46,7 +46,6 @@ public class PicamService implements VideoListener, Runnable {
     
     static {
         PicamConfig.initSystem();
-        PicamConfig.getInstance().load();
     }
     
     private final FreeIMU imu = new FreeIMU();
