@@ -76,6 +76,8 @@ public final class BlobDetector extends AbstractTableModel implements VideoProce
     private float[] xyData;
     private final long ptr;
     
+    private final PicamConfig config = PicamConfig.getInstance();
+    
     public BlobDetector() {
         ptr = _create();
     }
@@ -113,7 +115,7 @@ public final class BlobDetector extends AbstractTableModel implements VideoProce
     
     @Override
     public void paint(PicamVideo vid, Graphics2D g) {
-        if (PicamConfig.drawMono) {
+        if (config.drawMono) {
             _getMonoData(ptr, grayData);
         } else {
             _getGrayData(ptr, grayData);
@@ -122,10 +124,10 @@ public final class BlobDetector extends AbstractTableModel implements VideoProce
         float[] xy = xyData; // avoid asynchonized modification
         float[] uv = uvData;
         int blobCount = xy.length >> 1;
-        if (PicamConfig.drawInfo) {
+        if (config.drawInfo) {
             g.drawString(String.format("Blobs: %1$d", blobCount), 6, 20);
         }
-        if (PicamConfig.drawBlob) {
+        if (config.drawBlob) {
             int size = BLOB_RADIUS << 1;
             int k = 0;
             for (int i = 0; i < blobCount; i++) {

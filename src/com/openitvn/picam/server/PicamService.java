@@ -46,7 +46,7 @@ public class PicamService implements VideoListener, Runnable {
     
     static {
         PicamConfig.initSystem();
-        PicamConfig.load();
+        PicamConfig.getInstance().load();
     }
     
     private final FreeIMU imu = new FreeIMU();
@@ -56,6 +56,8 @@ public class PicamService implements VideoListener, Runnable {
     private final ServerSocket server;
     private NetworkSession session;
     private Process raspivid;
+    
+    private final PicamConfig config = PicamConfig.getInstance();
     
     private PicamService() throws IOException {
         video.addPicamListener(PicamService.this);
@@ -130,7 +132,7 @@ public class PicamService implements VideoListener, Runnable {
         boolean sendName = is.read() == NetworkHelper.OPTION_YES;
         os.write(NetworkHelper.STATUS_SUCCESS);
         if (sendName) {
-            String name = PicamConfig.hostName;
+            String name = config.hostName;
             os.write(name == null ? 0 : name.length());
             if (name != null)
                 os.write(name.getBytes());

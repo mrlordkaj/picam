@@ -25,36 +25,21 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Thinh Pham
  */
-public abstract class PicamConfig {
+public final class PicamConfig extends Preference {
+    
+    private static PicamConfig instance;
+
+    public static PicamConfig getInstance() {
+        if (instance == null) {
+            instance = new PicamConfig();
+        }
+        return instance;
+    }
     
     public static final String APP_NAME = "Picam Service Solution";
     public static final String APP_VERSION = "1.0.0";
     public static final String WORK_ROOT = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
     public static final String WORK_PATH = WORK_ROOT+"/picam";
-    
-    static final Preference CONFIG_PROFILE = new Preference("picam/application.cfg");
-    
-    public static String hostName;
-    public static boolean drawInfo;
-    public static boolean drawMono;
-    public static boolean drawBlob;
-    
-    public static void load() {
-        Preference p = CONFIG_PROFILE;
-        hostName = p.getString("hostName", null);
-        drawInfo = p.getBoolean("drawInfo", true);
-        drawMono = p.getBoolean("drawMono", false);
-        drawBlob = p.getBoolean("drawBlob", true);
-    }
-    
-    public static void save() {
-        Preference p = CONFIG_PROFILE;
-        p.putString("hostName", hostName);
-        p.putBoolean("drawInfo", drawInfo);
-        p.putBoolean("drawMono", drawMono);
-        p.putBoolean("drawBlob", drawBlob);
-        p.save();
-    }
     
     public static void initSystem() {
         try {
@@ -63,5 +48,14 @@ public abstract class PicamConfig {
         } catch (ClassNotFoundException | InstantiationException |
                 IllegalAccessException | UnsupportedLookAndFeelException ex) { }
         System.load(System.getProperty("user.dir")+"/libpicam.so");
+    }
+    
+    public String hostName = null;
+    public boolean drawInfo = true;
+    public boolean drawMono = false;
+    public boolean drawBlob = true;
+    
+    private PicamConfig() {
+        super("picam/application.cfg");
     }
 }

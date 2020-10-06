@@ -52,7 +52,7 @@ public final class VideoPlay extends JFrame implements
     
     static {
         PicamConfig.initSystem();
-        PicamConfig.load();
+        PicamConfig.getInstance().load();
     }
     
     final PicamVideo video = new PicamVideo();
@@ -69,14 +69,16 @@ public final class VideoPlay extends JFrame implements
     private final String imgDir = "/com/openitvn/picam/img/";
     private File curDir; // remember current directory of FileChooser
     
+    private final PicamConfig config = PicamConfig.getInstance();
+    
     private VideoPlay(int width, int height, Encoding raw) {
         initComponents();
         // complete init components
         video.addPicamListener(VideoPlay.this);
         // update drawing menus
-        mnuInfo.setSelected(PicamConfig.drawInfo);
-        mnuMono.setSelected(PicamConfig.drawMono);
-        mnuBlob.setSelected(PicamConfig.drawBlob);
+        mnuInfo.setSelected(config.drawInfo);
+        mnuMono.setSelected(config.drawMono);
+        mnuBlob.setSelected(config.drawBlob);
         // preload profile and start video
         String fn = String.format("profile_%1$dx%2$d.xml", width, height);
         try (FileInputStream fis = new FileInputStream(PicamConfig.WORK_PATH + "/" + fn)) {
@@ -93,7 +95,7 @@ public final class VideoPlay extends JFrame implements
     @Override
     public void dispose() {
         video.stop();
-        PicamConfig.save();
+        config.save();
         super.dispose();
         System.exit(0); // TODO: do not force exit
     }
@@ -623,16 +625,16 @@ public final class VideoPlay extends JFrame implements
     }//GEN-LAST:event_mnuProcBlobItemStateChanged
 
     private void mnuInfoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mnuInfoItemStateChanged
-        PicamConfig.drawInfo = evt.getStateChange() == ItemEvent.SELECTED;
+        config.drawInfo = evt.getStateChange() == ItemEvent.SELECTED;
     }//GEN-LAST:event_mnuInfoItemStateChanged
 
     private void mnuMonoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mnuMonoItemStateChanged
-        PicamConfig.drawMono = evt.getStateChange() == ItemEvent.SELECTED;
-        blob.setGenerateMono(PicamConfig.drawMono);
+        config.drawMono = evt.getStateChange() == ItemEvent.SELECTED;
+        blob.setGenerateMono(config.drawMono);
     }//GEN-LAST:event_mnuMonoItemStateChanged
 
     private void mnuBlobItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_mnuBlobItemStateChanged
-        PicamConfig.drawBlob = evt.getStateChange() == ItemEvent.SELECTED;
+        config.drawBlob = evt.getStateChange() == ItemEvent.SELECTED;
     }//GEN-LAST:event_mnuBlobItemStateChanged
 
     private void chkAdvancedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chkAdvancedItemStateChanged
