@@ -74,8 +74,6 @@ public final class LensCalibrator extends AbstractTableModel implements VideoPro
     
     private final ArrayList<LensEntry> entries = new ArrayList<>();
     
-    private final PicamConfig config = PicamConfig.getInstance();
-    
     public LensCalibrator() {
         ptr = _create();
     }
@@ -164,7 +162,7 @@ public final class LensCalibrator extends AbstractTableModel implements VideoPro
         int top = 0;
         int left = 8;
         if (calib) {
-            if (config.drawInfo) {
+            if (PicamConfig.drawInfo) {
                 LensEntry e = getActiveEntry();
                 g.setColor(Color.GREEN);
                 g.drawString(String.format("Errors: %1$.8f", e.error), left, top += 20);

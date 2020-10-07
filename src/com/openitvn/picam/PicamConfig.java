@@ -26,37 +26,39 @@ import javax.swing.filechooser.FileSystemView;
  * @author Thinh Pham
  */
 public final class PicamConfig extends Preference {
-    
-    private static PicamConfig instance;
 
-    public static PicamConfig getInstance() {
-        if (instance == null) {
-            instance = new PicamConfig();
-            instance.load();
-        }
-        return instance;
-    }
-    
     public static final String APP_NAME = "Picam Service Solution";
     public static final String APP_VERSION = "1.0.0";
     public static final String WORK_ROOT = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-    public static final String WORK_PATH = WORK_ROOT+"/picam";
-    
+    public static final String WORK_PATH = WORK_ROOT + "/picam";
+
     public static void initSystem() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             UIManager.put("FileChooser.readOnly", Boolean.TRUE);
-        } catch (ClassNotFoundException | InstantiationException |
-                IllegalAccessException | UnsupportedLookAndFeelException ex) { }
-        System.load(System.getProperty("user.dir")+"/libpicam.so");
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+        }
+        System.load(System.getProperty("user.dir") + "/libpicam.so");
     }
-    
-    public String hostName = null;
-    public boolean drawInfo = true;
-    public boolean drawMono = false;
-    public boolean drawBlob = true;
-    
+
+    public static String hostName = null;
+    public static boolean drawInfo = true;
+    public static boolean drawMono = false;
+    public static boolean drawBlob = true;
+
     private PicamConfig() {
         super("picam/application.cfg");
+    }
+
+    private static final PicamConfig instance;
+
+    static {
+        instance = new PicamConfig();
+        instance.read();
+    }
+
+    public static void save() {
+        instance.write();
     }
 }

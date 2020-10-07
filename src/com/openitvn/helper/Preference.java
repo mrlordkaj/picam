@@ -41,30 +41,41 @@ public abstract class Preference {
         file = new File(dir + "/" + name);
     }
 
-    protected void load() {
+    private boolean isSupported(Field field) {
+        int mod = field.getModifiers();
+        return Modifier.isPublic(mod) && Modifier.isStatic(mod);
+    }
+
+    protected final void read() {
         try (FileInputStream fis = new FileInputStream(file);
                 InputStreamReader isr = new InputStreamReader(fis);
                 BufferedReader br = new BufferedReader(isr)) {
+            Class<?> clazz = getClass();
             String line;
             while ((line = br.readLine()) != null) {
                 String[] s = line.split("\\s*=\\s*");
                 if (s.length == 2) {
                     try {
-                        Field field = getClass().getField(s[0]);
-                        switch (field.getType().getSimpleName()) {
-                            case "boolean":
-                                field.setBoolean(this, Boolean.parseBoolean(s[1]));
-                                break;
-                            case "int":
-                                field.setInt(this, Integer.parseInt(s[1]));
-                                break;
-                            case "String":
-                                field.set(this, s[1]);
-                                break;
+                        Field field = clazz.getField(s[0]);
+                        if (isSupported(field)) {
+                            switch (field.getType().getSimpleName()) {
+                                case "boolean":
+                                    field.setBoolean(clazz, Boolean.parseBoolean(s[1]));
+                                    break;
+                                case "int":
+                                    field.setInt(clazz, Integer.parseInt(s[1]));
+                                    break;
+                                case "String":
+                                    field.set(clazz, s[1]);
+                                    break;
+                                default:
+                                    System.err.println("Unsupported type: " + field.getType().getSimpleName());
+                                    break;
+                            }
                         }
                     } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
                             | SecurityException e) {
-                        e.printStackTrace(System.err);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -73,31 +84,32 @@ public abstract class Preference {
         }
     }
 
-    public void save() {
+    public final void write() {
         file.getParentFile().mkdirs();
         try (FileOutputStream fos = new FileOutputStream(file);
                 OutputStreamWriter osw = new OutputStreamWriter(fos);
                 BufferedWriter bw = new BufferedWriter(osw)) {
-            for (Field field : getClass().getDeclaredFields()) {
-                if (!Modifier.isStatic(field.getModifiers())) {
+            Class<?> clazz = getClass();
+            for (Field field : clazz.getDeclaredFields()) {
+                if (isSupported(field)) {
                     bw.append(field.getName()).append("=");
                     try {
                         switch (field.getType().getSimpleName()) {
                             case "boolean":
-                                bw.append(Boolean.toString(field.getBoolean(this)));
+                                bw.append(Boolean.toString(field.getBoolean(clazz)));
                                 break;
                             case "int":
-                                bw.append(Integer.toString(field.getInt(this)));
+                                bw.append(Integer.toString(field.getInt(clazz)));
                                 break;
                             case "String":
-                                bw.append(field.get(this).toString());
+                                bw.append(field.get(clazz).toString());
                                 break;
                             default:
                                 System.err.println("Unsupported type: " + field.getType().getSimpleName());
                                 break;
                         }
                     } catch (IllegalArgumentException | IllegalAccessException e) {
-                        e.printStackTrace(System.err);
+                        e.printStackTrace();
                     }
                     bw.append("\n");
                 }
@@ -109,10 +121,12 @@ public abstract class Preference {
 
     public void printProperties() {
         for (Field field : getClass().getDeclaredFields()) {
-            try {
-                System.out.printf("%s %s = %s;\n", field.getType().getSimpleName(), field.getName(), field.get(this));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace(System.err);
+            if (isSupported(field)) {
+                try {
+                    System.out.printf("%s %s = %s;\n", field.getType().getSimpleName(), field.getName(), field.get(this));
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

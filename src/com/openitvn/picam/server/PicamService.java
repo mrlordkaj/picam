@@ -56,8 +56,6 @@ public class PicamService implements VideoListener, Runnable {
     private NetworkSession session;
     private Process raspivid;
     
-    private final PicamConfig config = PicamConfig.getInstance();
-    
     private PicamService() throws IOException {
         video.addPicamListener(PicamService.this);
         server = new ServerSocket(NetworkHelper.PORT_COMMAND);
@@ -131,7 +129,7 @@ public class PicamService implements VideoListener, Runnable {
         boolean sendName = is.read() == NetworkHelper.OPTION_YES;
         os.write(NetworkHelper.STATUS_SUCCESS);
         if (sendName) {
-            String name = config.hostName;
+            String name = PicamConfig.hostName;
             os.write(name == null ? 0 : name.length());
             if (name != null)
                 os.write(name.getBytes());
