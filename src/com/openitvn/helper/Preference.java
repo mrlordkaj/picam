@@ -43,7 +43,7 @@ public abstract class Preference {
 
     private boolean isSupported(Field field) {
         int mod = field.getModifiers();
-        return Modifier.isPublic(mod) && Modifier.isStatic(mod);
+        return Modifier.isPublic(mod) && Modifier.isStatic(mod) && !Modifier.isFinal(mod);
     }
 
     protected final void read() {
@@ -69,18 +69,20 @@ public abstract class Preference {
                                     field.set(clazz, s[1]);
                                     break;
                                 default:
-                                    System.err.println("Unsupported type: " + field.getType().getSimpleName());
+                                    System.err.printf("Unsupported %s (%s).\n",
+                                            field.getType().getSimpleName(),
+                                            getClass().getName());
                                     break;
                             }
                         }
                     } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
                             | SecurityException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                 }
             }
         } catch (IOException ex) {
-            System.err.println("Unable to read config file '" + file + "'.");
+            System.err.printf("Unable to read config file %s.\n", file);
         }
     }
 
@@ -105,11 +107,13 @@ public abstract class Preference {
                                 bw.append(field.get(clazz).toString());
                                 break;
                             default:
-                                System.err.println("Unsupported type: " + field.getType().getSimpleName());
+                                System.err.printf("Unsupported %s (%s).\n",
+                                            field.getType().getSimpleName(),
+                                            getClass().getName());
                                 break;
                         }
                     } catch (IllegalArgumentException | IllegalAccessException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                     bw.append("\n");
                 }
@@ -125,7 +129,7 @@ public abstract class Preference {
                 try {
                     System.out.printf("%s %s = %s;\n", field.getType().getSimpleName(), field.getName(), field.get(this));
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(System.err);
                 }
             }
         }
