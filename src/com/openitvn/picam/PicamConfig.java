@@ -42,7 +42,6 @@ public final class PicamConfig extends Preference {
         System.load(System.getProperty("user.dir") + "/libpicam.so");
     }
 
-    public static String hostName = null;
     public static boolean drawInfo = true;
     public static boolean drawMono = false;
     public static boolean drawBlob = true;

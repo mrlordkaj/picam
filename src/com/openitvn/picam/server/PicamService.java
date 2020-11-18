@@ -18,7 +18,6 @@ package com.openitvn.picam.server;
 
 import com.openitvn.picam.PicamConfig;
 import com.openitvn.picam.Encoding;
-import com.openitvn.picam.FreeIMU;
 import com.openitvn.picam.PicamVideo;
 import com.openitvn.picam.VideoListener;
 import com.openitvn.picam.VideoProcessor;
@@ -33,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -48,7 +48,6 @@ public class PicamService implements VideoListener, Runnable {
         PicamConfig.initSystem();
     }
     
-    private final FreeIMU imu = new FreeIMU();
     private final PicamVideo video = new PicamVideo();
     private final LensCalibrator calib = new LensCalibrator();
     private final BlobDetector detect = new BlobDetector();
@@ -100,14 +99,6 @@ public class PicamService implements VideoListener, Runnable {
                     cmdInfo(is, os);
                     break;
                     
-                case NetworkHelper.FOURCC_MPU_OPEN:
-                    cmdOpenMPU(is, os);
-                    break;
-                    
-                case NetworkHelper.FOURCC_MPU_CLOSE:
-                    cmdCloseMPU(is, os);
-                    break;
-                    
                 case NetworkHelper.FOURCC_STREAM:
                     cmdStream(is, os);
                     break;
@@ -129,10 +120,10 @@ public class PicamService implements VideoListener, Runnable {
         boolean sendName = is.read() == NetworkHelper.OPTION_YES;
         os.write(NetworkHelper.STATUS_SUCCESS);
         if (sendName) {
-            String name = PicamConfig.hostName;
-            os.write(name == null ? 0 : name.length());
-            if (name != null)
-                os.write(name.getBytes());
+            InetAddress ia = InetAddress.getLocalHost();
+            String name = ia.getHostName();
+            os.write(name.length());
+            os.write(name.getBytes());
         }
         os.flush();
         waitConnect(false);
@@ -168,16 +159,6 @@ public class PicamService implements VideoListener, Runnable {
             os.write(NetworkHelper.STATUS_FAILURE);
         }
         os.flush();
-        waitConnect(false);
-    }
-    
-    private void cmdOpenMPU(InputStream is, OutputStream os) throws IOException {
-        imu.start();
-        waitConnect(false);
-    }
-    
-    private void cmdCloseMPU(InputStream is, OutputStream os) {
-        imu.stop();
         waitConnect(false);
     }
     
