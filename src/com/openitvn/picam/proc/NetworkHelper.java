@@ -28,7 +28,6 @@ import java.nio.ByteOrder;
 public abstract class NetworkHelper {
     
     public static final String  FOURCC_PING      = "ping",
-                                FOURCC_RENAME    = "renm",
                                 FOURCC_INFO      = "info",
                                 FOURCC_STREAM    = "strm",
                                 FOURCC_CONNECT   = "conn",
@@ -72,7 +71,7 @@ public abstract class NetworkHelper {
     }
     
     public static boolean readPacket(InputStream is, byte[] dst, int pos, int len) throws IOException {
-        int remain = dst.length;
+        int remain = Math.min(dst.length, len);
         while (remain > 0) {
             int n = Math.min(is.available(), remain);
             if (n >= 0) {
