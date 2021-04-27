@@ -30,8 +30,6 @@ public abstract class NetworkHelper {
     public static final String  FOURCC_PING      = "ping",
                                 FOURCC_RENAME    = "renm",
                                 FOURCC_INFO      = "info",
-                                FOURCC_MPU_OPEN  = "mpuo",
-                                FOURCC_MPU_CLOSE = "mpuc",
                                 FOURCC_STREAM    = "strm",
                                 FOURCC_CONNECT   = "conn",
                                 FOURCC_DISCONN   = "dcon",
@@ -53,7 +51,6 @@ public abstract class NetworkHelper {
     
     public static final int PORT_COMMAND   = 2110; // socket port for command executive
     public static final int PORT_STREAM    = 2111;
-    public static final int PORT_MPU6050   = 2112;
     
     public static boolean readPacket(InputStream is, byte[] dst) {
         try {
@@ -74,20 +71,20 @@ public abstract class NetworkHelper {
         }
     }
     
-//    public static boolean readPacket(InputStream is, byte[] dst, int pos, int len) throws IOException {
-//        int remain = dst.length;
-//        while (remain > 0) {
-//            int n = Math.min(is.available(), remain);
-//            if (n >= 0) {
-//                is.read(dst, pos, n);
-//                pos += n;
-//                remain -= n;
-//                continue;
-//            }
-//            return false;
-//        }
-//        return true;
-//    }
+    public static boolean readPacket(InputStream is, byte[] dst, int pos, int len) throws IOException {
+        int remain = dst.length;
+        while (remain > 0) {
+            int n = Math.min(is.available(), remain);
+            if (n >= 0) {
+                is.read(dst, pos, n);
+                pos += n;
+                remain -= n;
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
     
     public static ByteBuffer readPacket(InputStream is, int len) throws IOException {
         ByteBuffer bb = ByteBuffer.allocate(len).order(ByteOrder.LITTLE_ENDIAN);
